@@ -84,7 +84,10 @@ public static Color fromRGB(int red, int green, int blue) throws IllegalArgument
 \end{lstlisting}
 
 \subsection{Equivalence Class Testing}
-For rationale, the function validates three parameters (\texttt{red}, \texttt{green}, \texttt{blue}), each with a valid domain of [0, 255]. Equivalence Class Testing partitions the input into valid and invalid classes for each parameter.
+For rationale, the function validates three parameters (\texttt{red},
+\texttt{green}, \texttt{blue}), each with a valid domain of [0, 255].
+Equivalence Class Testing partitions the input into valid and invalid classes
+for each parameter.
 
 \subsubsection{Equivalence Classes}
 \begin{table}[H]
@@ -93,7 +96,8 @@ For rationale, the function validates three parameters (\texttt{red}, \texttt{gr
 \label{tab:color_equivalence_classes}
 \begin{tabular}{lccc}
 \toprule
-\textbf{Parameter} & \textbf{Invalid (Lower)} & \textbf{Valid} & \textbf{Invalid (Upper)} \\
+\textbf{Parameter} & \textbf{Invalid (Lower)} & \textbf{Valid} & \textbf{Invalid
+(Upper)} \\
 \midrule
 \texttt{red}      & red $<$ 0   & 0 $\leq$ red $\leq$ 255   & red $>$ 255 \\
 \texttt{green}    & green $<$ 0 & 0 $\leq$ green $\leq$ 255 & green $>$ 255 \\
@@ -102,11 +106,15 @@ For rationale, the function validates three parameters (\texttt{red}, \texttt{gr
 \end{tabular}
 \end{table}
 
-Each parameter has 3 equivalence classes, therefore $|\texttt{red}| = |\texttt{green}| = |\texttt{blue}| = 3$.
+Each parameter has 3 equivalence classes, therefore $|\texttt{red}| =
+|\texttt{green}| = |\texttt{blue}| = 3$.
 
 \subsubsection{Test Cases}
-\textbf{Weak Equivalence:} The number of test cases equals the maximum number of classes across all parameters: $\max(|\texttt{red}|, |\texttt{green}|, |\texttt{blue}|) = 3$ tests.\\
-\textbf{Strong Equivalence:} The cartesian product of partition subsets, therefore $|\texttt{red}| * |\texttt{green}| * |\texttt{blue}| = 27$ tests.
+\textbf{Weak Equivalence:} The number of test cases equals the maximum number of
+classes across all parameters: $\max(|\texttt{red}|, |\texttt{green}|,
+|\texttt{blue}|) = 3$ tests.\\
+\textbf{Strong Equivalence:} The cartesian product of partition subsets,
+therefore $|\texttt{red}| * |\texttt{green}| * |\texttt{blue}| = 27$ tests.
 
 \begin{table}[H]
 \centering
@@ -114,11 +122,15 @@ Each parameter has 3 equivalence classes, therefore $|\texttt{red}| = |\texttt{g
 \label{tab:color_weak_equivalence}
 \begin{tabular}{cccccc}
 \toprule
-\textbf{Test ID} & \textbf{Red} & \textbf{Green} & \textbf{Blue} & \textbf{Classes Covered} & \textbf{Expected Outcome} \\
+\textbf{Test ID} & \textbf{Red} & \textbf{Green} & \textbf{Blue} &
+\textbf{Classes Covered} & \textbf{Expected Outcome} \\
 \midrule
-WE1 & -1  & -1  & -1  & Invalid Lower (R, G, B) & \texttt{IllegalArgumentException} \\
-WE2 & 128 & 128 & 128 & Valid (R, G, B)         & \texttt{Color} object created \\
-WE3 & 256 & 256 & 256 & Invalid Upper (R, G, B) & \texttt{IllegalArgumentException} \\
+WE1 & -1  & -1  & -1  & Invalid Lower (R, G, B) &
+\texttt{IllegalArgumentException} \\
+WE2 & 128 & 128 & 128 & Valid (R, G, B)         & \texttt{Color} object created
+\\
+WE3 & 256 & 256 & 256 & Invalid Upper (R, G, B) &
+\texttt{IllegalArgumentException} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -129,7 +141,8 @@ WE3 & 256 & 256 & 256 & Invalid Upper (R, G, B) & \texttt{IllegalArgumentExcepti
 \label{tab:color_strong_equivalence}
 \begin{tabular}{ccccc}
 \toprule
-\textbf{Test ID} & \textbf{Red} & \textbf{Green} & \textbf{Blue} & \textbf{Expected Outcome} \\
+\textbf{Test ID} & \textbf{Red} & \textbf{Green} & \textbf{Blue} &
+\textbf{Expected Outcome} \\
 \midrule
 SE1  & -1  & -1  & -1  & \texttt{IllegalArgumentException} \\
 SE2  & -1  & -1  & 128 & \texttt{IllegalArgumentException} \\
@@ -163,10 +176,14 @@ SE27 & 256 & 256 & 256 & \texttt{IllegalArgumentException} \\
 \end{table}
 
 \subsection{Boundary Value Analysis (BVA)}
-Boundary Value Analysis focuses on testing values at and around the boundaries of each input domain, where defects are statistically more likely to occur. The boundary values considered are:
+Boundary Value Analysis focuses on testing values at and around the boundaries
+of each input domain, where defects are statistically more likely to occur. The
+boundary values considered are:
 \begin{itemize}
-    \item \textbf{Normal variants:} $\{0, 1, 128, 254, 255\}$ representing \textit{min}, \textit{min+}, \textit{nom}, \textit{max-}, and \textit{max}.
-    \item \textbf{Robust variants:} additionally include $\{-1, 256\}$ representing \textit{min-} and \textit{max+} (out-of-range values).
+    \item \textbf{Normal variants:} $\{0, 1, 128, 254, 255\}$ representing
+    \textit{min}, \textit{min+}, \textit{nom}, \textit{max-}, and \textit{max}.
+    \item \textbf{Robust variants:} additionally include $\{-1, 256\}$
+    representing \textit{min-} and \textit{max+} (out-of-range values).
 \end{itemize}
 
 \subsubsection{Number of Test Cases}
@@ -188,10 +205,18 @@ Robust Worst Case BVA   & $7^n$    & 343 \\
 
 \paragraph{Rationale}
 \begin{itemize}
-    \item \textbf{Simple BVA} ($4n+1 = 13$): assumes the single-fault hypothesis. For each variable, the 5 boundary values are tested while keeping the remaining variables at their nominal value. The nominal-only case is counted once instead of $n$ times.
-    \item \textbf{Robust BVA} ($6n+1 = 19$): extends Simple BVA by adding the two out-of-range values per variable, allowing explicit verification of the exception-throwing behavior.
-    \item \textbf{Worst Case BVA} ($5^n = 125$): drops the single-fault hypothesis and considers all combinations of boundary values across the three parameters (Cartesian product).
-    \item \textbf{Robust Worst Case BVA} ($7^n = 343$): the most exhaustive variant, combining the multi-fault assumption with the robust value set.
+    \item \textbf{Simple BVA} ($4n+1 = 13$): assumes the single-fault
+    hypothesis. For each variable, the 5 boundary values are tested while
+    keeping the remaining variables at their nominal value. The nominal-only
+    case is counted once instead of $n$ times.
+    \item \textbf{Robust BVA} ($6n+1 = 19$): extends Simple BVA by adding the
+    two out-of-range values per variable, allowing explicit verification of the
+    exception-throwing behavior.
+    \item \textbf{Worst Case BVA} ($5^n = 125$): drops the single-fault
+    hypothesis and considers all combinations of boundary values across the
+    three parameters (Cartesian product).
+    \item \textbf{Robust Worst Case BVA} ($7^n = 343$): the most exhaustive
+    variant, combining the multi-fault assumption with the robust value set.
 \end{itemize}
 
 \subsubsection{Simple BVA Test Battery}
@@ -201,7 +226,8 @@ Robust Worst Case BVA   & $7^n$    & 343 \\
 \label{tab:color_simple_bva}
 \begin{tabular}{ccccc}
 \toprule
-\textbf{Test ID} & \textbf{Red} & \textbf{Green} & \textbf{Blue} & \textbf{Expected Outcome} \\
+\textbf{Test ID} & \textbf{Red} & \textbf{Green} & \textbf{Blue} &
+\textbf{Expected Outcome} \\
 \midrule
 SBVA1  & 0   & 128 & 128 & \texttt{Color} object created \\
 SBVA2  & 1   & 128 & 128 & \texttt{Color} object created \\
@@ -227,7 +253,8 @@ SBVA13 & 128 & 128 & 128 & \texttt{Color} object created \\
 \label{tab:color_robust_bva}
 \begin{tabular}{ccccc}
 \toprule
-\textbf{Test ID} & \textbf{Red} & \textbf{Green} & \textbf{Blue} & \textbf{Expected Outcome} \\
+\textbf{Test ID} & \textbf{Red} & \textbf{Green} & \textbf{Blue} &
+\textbf{Expected Outcome} \\
 \midrule
 RBVA1  & -1  & 128 & 128 & \texttt{IllegalArgumentException} \\
 RBVA2  & 0   & 128 & 128 & \texttt{Color} object created \\
@@ -253,15 +280,23 @@ RBVA19 & 128 & 128 & 128 & \texttt{Color} object created \\
 \end{table}
 
 \subsubsection{Worst Case BVA Test Battery}
-The Worst Case BVA test battery consists of all $5^3 = 125$ combinations obtained from the Cartesian product of the boundary value set $\{0, 1, 128, 254, 255\}$ for the three parameters. Since all values lie within the valid domain $[0, 255]$, \emph{all 125 test cases are expected to successfully create a \texttt{Color} object}. This evidences a known limitation of this technique: without including invalid values, Worst Case BVA does not exercise the exception-throwing behavior of the function.
+The Worst Case BVA test battery consists of all $5^3 = 125$ combinations
+obtained from the Cartesian product of the boundary value set $\{0, 1, 128, 254,
+255\}$ for the three parameters. Since all values lie within the valid domain
+$[0, 255]$, \emph{all 125 test cases are expected to successfully create a
+\texttt{Color} object}. This evidences a known limitation of this technique:
+without including invalid values, Worst Case BVA does not exercise the
+exception-throwing behavior of the function.
 
 \begin{table}[H]
 \centering
-\caption{Worst Case BVA Test Cases for \texttt{Color.fromRGB} (representative subset)}
+\caption{Worst Case BVA Test Cases for \texttt{Color.fromRGB} (representative
+subset)}
 \label{tab:color_worst_case_bva}
 \begin{tabular}{ccccc}
 \toprule
-\textbf{Test ID} & \textbf{Red} & \textbf{Green} & \textbf{Blue} & \textbf{Expected Outcome} \\
+\textbf{Test ID} & \textbf{Red} & \textbf{Green} & \textbf{Blue} &
+\textbf{Expected Outcome} \\
 \midrule
 WCBVA1   & 0   & 0   & 0   & \texttt{Color} object created \\
 WCBVA2   & 0   & 0   & 1   & \texttt{Color} object created \\
@@ -278,15 +313,22 @@ WCBVA125 & 255 & 255 & 255 & \texttt{Color} object created \\
 \end{table}
 
 \subsubsection{Robust Worst Case BVA Test Battery}
-The Robust Worst Case BVA test battery consists of all $7^3 = 343$ combinations obtained from the Cartesian product of the robust boundary value set $\{-1, 0, 1, 128, 254, 255, 256\}$ for the three parameters. A test case produces a valid \texttt{Color} object only if all three parameters are within $[0, 255]$; otherwise, an \texttt{IllegalArgumentException} is thrown. This yields $5^3 = 125$ successful cases and $343 - 125 = 218$ exception cases.
+The Robust Worst Case BVA test battery consists of all $7^3 = 343$ combinations
+obtained from the Cartesian product of the robust boundary value set $\{-1, 0,
+1, 128, 254, 255, 256\}$ for the three parameters. A test case produces a valid
+\texttt{Color} object only if all three parameters are within $[0, 255]$;
+otherwise, an \texttt{IllegalArgumentException} is thrown. This yields $5^3 =
+125$ successful cases and $343 - 125 = 218$ exception cases.
 
 \begin{table}[H]
 \centering
-\caption{Robust Worst Case BVA Test Cases for \texttt{Color.fromRGB} (representative subset)}
+\caption{Robust Worst Case BVA Test Cases for \texttt{Color.fromRGB}
+(representative subset)}
 \label{tab:color_robust_worst_case_bva}
 \begin{tabular}{ccccc}
 \toprule
-\textbf{Test ID} & \textbf{Red} & \textbf{Green} & \textbf{Blue} & \textbf{Expected Outcome} \\
+\textbf{Test ID} & \textbf{Red} & \textbf{Green} & \textbf{Blue} &
+\textbf{Expected Outcome} \\
 \midrule
 RWCBVA1   & -1  & -1  & -1  & \texttt{IllegalArgumentException} \\
 RWCBVA2   & -1  & -1  & 0   & \texttt{IllegalArgumentException} \\
@@ -299,8 +341,30 @@ RWCBVA343 & 256 & 256 & 256 & \texttt{IllegalArgumentException} \\
 \end{tabular}
 \end{table}
 
+\subsection{Used Prompt}
+\begin{lstlisting}
+I have a Java method Color.fromRGB(int red, int green, int blue) that validates
+each parameter to be in [0, 255] and throws IllegalArgumentException otherwise.
+Generate JUnit 5 tests from these specifications:
+
+Simple BVA (13 tests, SBVA1-SBVA13): vary one parameter at a time across {0, 1,
+128, 254, 255}, keep others at 128. 
+Robust BVA (19 tests): Simple BVA + out-of-range values -1 and 256 per
+parameter. 
+Worst Case BVA (125 tests): Cartesian product of {0, 1, 128, 254, 255}. 
+Robust Worst Case BVA (343 tests): Cartesian product of {-1, 0, 1, 128, 254,
+255, 256}.
+
+Use @ParameterizedTest with @CsvSource for the smaller batteries and
+@MethodSource with programmatic generation for the larger ones. Each test
+asserts either successful Color creation (all parameters in [0, 255]) or
+IllegalArgumentException.
+\end{lstlisting}
+
 \subsection{Control Flow-Based Testing}
-For rationale, the function has three validation checks (\texttt{Validate.isTrue}) that throw exceptions if any condition fails. Control Flow-Based Testing ensures all statements, decisions, and paths are covered.
+For rationale, the function has three validation checks
+(\texttt{Validate.isTrue}) that throw exceptions if any condition fails. Control
+Flow-Based Testing ensures all statements, decisions, and paths are covered.
 
 \textbf{TODO}
 
