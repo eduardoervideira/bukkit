@@ -8,6 +8,13 @@ import org.junit.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
+
 @SuppressWarnings("javadoc")
 public class ColorTest {
     static class TestColor {
@@ -396,13 +403,13 @@ public class ColorTest {
         assertThrows(IllegalArgumentException.class, () -> Color.fromRGB(128, 128, 256));
     }*/
 
+    // TODO: perguntar ao professor se basta assim ou é os 7 tests?
+    // Weak Equivalence
     @Test
     public void WE1_invalidLowerClass_throwsException() {
         assertThrows(IllegalArgumentException.class, () -> Color.fromRGB(-1, -1, -1));
     }
 
-    // TODO: perguntar ao professor se basta assim ou é os 7 tests?
-    // Weak Equivalence
     @Test
     public void WE2_validClass_createsColor() {
         Color color = Color.fromRGB(128, 128, 128);
@@ -464,5 +471,115 @@ public class ColorTest {
         assertNotNull(color);
     }
 
-    // BVA testing (im not sure about this, i'll ask teacher thursday)
+    //TODO: BVA testing (im not sure about this, i'll ask teacher thursday)
+    // ==================== Simple BVA (13 tests) ====================
+    @ParameterizedTest(name = "{0}: fromRGB({1}, {2}, {3}) should succeed")
+    @CsvSource({
+            "SBVA1,  0,   128, 128",
+            "SBVA2,  1,   128, 128",
+            "SBVA3,  254, 128, 128",
+            "SBVA4,  255, 128, 128",
+            "SBVA5,  128, 0,   128",
+            "SBVA6,  128, 1,   128",
+            "SBVA7,  128, 254, 128",
+            "SBVA8,  128, 255, 128",
+            "SBVA9,  128, 128, 0",
+            "SBVA10, 128, 128, 1",
+            "SBVA11, 128, 128, 254",
+            "SBVA12, 128, 128, 255",
+            "SBVA13, 128, 128, 128"
+    })
+    public void simpleBVA_validBoundaries_createColor(String id, int red, int green, int blue) {
+        Color color = Color.fromRGB(red, green, blue);
+        assertNotNull(color);
+    }
+
+    // ==================== Robust BVA (19 tests) ====================
+    @ParameterizedTest(name = "{0}: fromRGB({1}, {2}, {3}) should succeed")
+    @CsvSource({
+            "RBVA2,  0,   128, 128",
+            "RBVA3,  1,   128, 128",
+            "RBVA4,  254, 128, 128",
+            "RBVA5,  255, 128, 128",
+            "RBVA8,  128, 0,   128",
+            "RBVA9,  128, 1,   128",
+            "RBVA10, 128, 254, 128",
+            "RBVA11, 128, 255, 128",
+            "RBVA14, 128, 128, 0",
+            "RBVA15, 128, 128, 1",
+            "RBVA16, 128, 128, 254",
+            "RBVA17, 128, 128, 255",
+            "RBVA19, 128, 128, 128"
+    })
+    public void robustBVA_validBoundaries_createColor(String id, int red, int green, int blue) {
+        Color color = Color.fromRGB(red, green, blue);
+        assertNotNull(color);
+    }
+
+    @ParameterizedTest(name = "{0}: fromRGB({1}, {2}, {3}) should throw")
+    @CsvSource({
+            "RBVA1,  -1,  128, 128",
+            "RBVA6,  256, 128, 128",
+            "RBVA7,  128, -1,  128",
+            "RBVA12, 128, 256, 128",
+            "RBVA13, 128, 128, -1",
+            "RBVA18, 128, 128, 256"
+    })
+    public void robustBVA_invalidBoundaries_throwException(String id, int red, int green, int blue) {
+        assertThrows(IllegalArgumentException.class,
+                () -> Color.fromRGB(red, green, blue));
+    }
+
+    // ==================== Worst Case BVA (125 tests) ====================
+    private static Stream<Arguments> worstCaseBVAProvider() {
+        int[] values = {0, 1, 128, 254, 255};
+        List<Arguments> args = new ArrayList<>();
+        int id = 1;
+        for (int r : values) {
+            for (int g : values) {
+                for (int b : values) {
+                    args.add(Arguments.of("WCBVA" + id++, r, g, b));
+                }
+            }
+        }
+        return args.stream();
+    }
+
+    @ParameterizedTest(name = "{0}: fromRGB({1}, {2}, {3}) should succeed")
+    @MethodSource("worstCaseBVAProvider")
+    public void worstCaseBVA_allCombinations_createColor(String id, int red, int green, int blue) {
+        Color color = Color.fromRGB(red, green, blue);
+        assertNotNull(color);
+    }
+
+    // ==================== Robust Worst Case BVA (343 tests) ====================
+    private static Stream<Arguments> robustWorstCaseBVAProvider() {
+        int[] values = {-1, 0, 1, 128, 254, 255, 256};
+        List<Arguments> args = new ArrayList<>();
+        int id = 1;
+        for (int r : values) {
+            for (int g : values) {
+                for (int b : values) {
+                    args.add(Arguments.of("RWCBVA" + id++, r, g, b));
+                }
+            }
+        }
+        return args.stream();
+    }
+
+    @ParameterizedTest(name = "{0}: fromRGB({1}, {2}, {3})")
+    @MethodSource("robustWorstCaseBVAProvider")
+    public void robustWorstCaseBVA_allCombinations(String id, int red, int green, int blue) {
+        boolean allValid = (red >= 0 && red <= 255)
+                        && (green >= 0 && green <= 255)
+                        && (blue >= 0 && blue <= 255);
+
+        if (allValid) {
+            Color color = Color.fromRGB(red, green, blue);
+            assertNotNull(color);
+        } else {
+            assertThrows(IllegalArgumentException.class,
+                    () -> Color.fromRGB(red, green, blue));
+        }
+    }
 }
