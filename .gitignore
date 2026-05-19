@@ -29,3 +29,10 @@
 *.ipr
 *.iws
 .idea/
+
+
+todo.tex
+main.log
+main.out
+main.aux
+main_old.pdf
