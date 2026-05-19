@@ -1,10 +1,12 @@
 package org.bukkit;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 @SuppressWarnings("javadoc")
 public class ColorTest {
@@ -27,8 +29,8 @@ public class ColorTest {
         }
     }
 
-    static TestColor[] examples = new TestColor[] {
-        /*            0xRRGGBB, 0xBBGGRR, 0xRR, 0xGG, 0xBB */
+    /*static TestColor[] examples = new TestColor[] {
+        //            0xRRGGBB, 0xBBGGRR, 0xRR, 0xGG, 0xBB
         new TestColor(0xFFFFFF, 0xFFFFFF, 0xFF, 0xFF, 0xFF),
         new TestColor(0xFFFFAA, 0xAAFFFF, 0xFF, 0xFF, 0xAA),
         new TestColor(0xFF00FF, 0xFF00FF, 0xFF, 0x00, 0xFF),
@@ -361,5 +363,106 @@ public class ColorTest {
     @Test(expected=IllegalArgumentException.class)
     public void testInvalidG12() {
         Color.WHITE.setGreen(0x100);
+    }*/
+
+
+    // TODO: REWRITE - ask teacher if its ok to go the other way around instead of doing max(255, 255, 255) = 255 tests - just test the invalid values?
+    /*@Test public void WE1_Valid() {
+        assertDoesNotThrow(() -> Color.fromRGB(128, 128, 128));
     }
+
+    @Test public void WE2_InvalidRed_Low() {
+        assertThrows(IllegalArgumentException.class, () -> Color.fromRGB(-1, 128, 128));
+    }
+
+    @Test public void WE3_InvalidRed_High() {
+        assertThrows(IllegalArgumentException.class, () -> Color.fromRGB(256, 128, 128));
+    }
+
+    @Test public void WE4_InvalidGreen_Low() {
+        assertThrows(IllegalArgumentException.class, () -> Color.fromRGB(128, -1, 128));
+    }
+
+    @Test public void WE5_InvalidGreen_High() {
+        assertThrows(IllegalArgumentException.class, () -> Color.fromRGB(128, 256, 128));
+    }
+
+    @Test public void WE6_InvalidBlue_Low() {
+        assertThrows(IllegalArgumentException.class, () -> Color.fromRGB(128, 128, -1));
+    }
+
+
+    @Test public void WE7_InvalidBlue_High() {
+        assertThrows(IllegalArgumentException.class, () -> Color.fromRGB(128, 128, 256));
+    }*/
+
+    @Test
+    public void WE1_invalidLowerClass_throwsException() {
+        assertThrows(IllegalArgumentException.class, () -> Color.fromRGB(-1, -1, -1));
+    }
+
+    // TODO: perguntar ao professor se basta assim ou é os 7 tests?
+    // Weak Equivalence
+    @Test
+    public void WE2_validClass_createsColor() {
+        Color color = Color.fromRGB(128, 128, 128);
+
+        assertAll("Color components", () -> assertNotNull(color, "Color object should not be null"),
+            () -> assertEquals((byte) 128, color.getRed(),   "Red component mismatch"),
+            () -> assertEquals((byte) 128, color.getGreen(), "Green component mismatch"),
+            () -> assertEquals((byte) 128, color.getBlue(),  "Blue component mismatch")
+        );
+    }
+
+    @Test
+    public void WE3_invalidUpperClass_throwsException() {
+        assertThrows(IllegalArgumentException.class, () -> Color.fromRGB(256, 256, 256));
+    }
+
+
+    // Strong Equivelence
+    @ParameterizedTest(name = "{0}: fromRGB({1}, {2}, {3}) should throw")
+    @CsvSource({
+            "SE1,  -1,  -1,  -1",
+            "SE2,  -1,  -1, 128",
+            "SE3,  -1,  -1, 256",
+            "SE4,  -1, 128,  -1",
+            "SE5,  -1, 128, 128",
+            "SE6,  -1, 128, 256",
+            "SE7,  -1, 256,  -1",
+            "SE8,  -1, 256, 128",
+            "SE9,  -1, 256, 256",
+            "SE10, 128,  -1,  -1",
+            "SE11, 128,  -1, 128",
+            "SE12, 128,  -1, 256",
+            "SE13, 128, 128,  -1",
+            "SE15, 128, 128, 256",
+            "SE16, 128, 256,  -1",
+            "SE17, 128, 256, 128",
+            "SE18, 128, 256, 256",
+            "SE19, 256,  -1,  -1",
+            "SE20, 256,  -1, 128",
+            "SE21, 256,  -1, 256",
+            "SE22, 256, 128,  -1",
+            "SE23, 256, 128, 128",
+            "SE24, 256, 128, 256",
+            "SE25, 256, 256,  -1",
+            "SE26, 256, 256, 128",
+            "SE27, 256, 256, 256"
+    })
+    public void invalidCombinations_throwException(String id, int red, int green, int blue) {
+        assertThrows(IllegalArgumentException.class,
+                () -> Color.fromRGB(red, green, blue));
+    }
+
+    @ParameterizedTest(name = "{0}: fromRGB({1}, {2}, {3}) should succeed")
+    @CsvSource({
+            "SE14, 128, 128, 128"
+    })
+    public void validCombination_createsColor(String id, int red, int green, int blue) {
+        Color color = Color.fromRGB(red, green, blue);
+        assertNotNull(color);
+    }
+
+    // BVA testing (im not sure about this, i'll ask teacher thursday)
 }
