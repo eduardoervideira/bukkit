@@ -1,0 +1,314 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage[left=3cm, right=3cm, top=2cm, bottom=3cm]{geometry}
+
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!10},
+    rulecolor=\color{gray!30},
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!50!black},
+    stringstyle=\color{red},
+    showstringspaces=false,
+    tabsize=4
+}
+
+\title{
+    \textbf{Software Quality 2025/26} \\[0.3cm]
+    \large Project 2
+}
+\author{
+    Eduardo Ervideira (72420) \\
+    Noah Andriamampianina (76197)
+}
+\date{Maio 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{center}
+\textbf{GitHub repository:} \url{https://github.com/eduardoervideira/Bukkit} \\[0.2cm]
+\end{center}
+
+% \vspace{1cm}
+% \tableofcontents
+% \newpage
+
+\section{Introduction}
+This report documents the application of black-box and white-box testing techniques to Bukkit, which is an open source Java API and plugin framework for Minecraft multiplayer servers. 
+
+Two functions were selected for testing:
+\begin{itemize}
+    \item \texttt{Color.fromRGB(int red, int green, int blue)}: Validates and creates a \texttt{Color} object from RGB values (0-255).
+    \item \texttt{Note(int octave, Tone tone, boolean sharped)}: Validates and creates a musical note based on octave, tone, and sharpness.
+\end{itemize}
+
+The report is structured as follows:
+\begin{itemize}
+    \item Section \ref{sec:color} covers \texttt{Color.fromRGB} with Equivalence Class Testing, Boundary Value Analysis, and Control Flow-Based Testing.
+    \item Section \ref{sec:note} covers \texttt{Note} with Cause-Effect Graphing, Category Partition Testing, and White-box Testing (Control Flow and Data Flow).
+\end{itemize}
+
+\section{Function: \texttt{Color.fromRGB}}
+\label{sec:color}
+
+\subsection{Source Code}
+The \texttt{Color.fromRGB} function and its private constructor are shown below. The full implementation is available at: \href{[GITHUB_LINK_TO_COLOR_JAVA]}{\texttt{Color.java}}.
+
+\begin{lstlisting}[language=Java, caption={Color.fromRGB Implementation}]
+private Color(int red, int green, int blue) {
+    Validate.isTrue(red >= 0 && red <= BIT_MASK, "Red is not between 0-255: ", red);
+    Validate.isTrue(green >= 0 && green <= BIT_MASK, "Green is not between 0-255: ", green);
+    Validate.isTrue(blue >= 0 && blue <= BIT_MASK, "Blue is not between 0-255: ", blue);
+
+    this.red = (byte) red;
+    this.green = (byte) green;
+    this.blue = (byte) blue;
+}
+
+public static Color fromRGB(int red, int green, int blue) throws IllegalArgumentException {
+    return new Color(red, green, blue);
+}
+\end{lstlisting}
+
+\subsection{Equivalence Class Testing}
+For rationale, the function validates three parameters (\texttt{red}, \texttt{green}, \texttt{blue}), each with a valid domain of [0, 255]. Equivalence Class Testing partitions the input into valid and invalid classes for each parameter.
+
+\subsubsection{Equivalence Classes}
+\begin{table}[H]
+\centering
+\caption{Equivalence Classes for \texttt{Color.fromRGB}}
+\label{tab:color_equivalence_classes}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Parameter} & \textbf{Invalid (Lower)} & \textbf{Valid} & \textbf{Invalid (Upper)} \\
+\midrule
+\texttt{red}      & red $<$ 0   & 0 $\leq$ red $\leq$ 255   & red $>$ 255 \\
+\texttt{green}    & green $<$ 0 & 0 $\leq$ green $\leq$ 255 & green $>$ 255 \\
+\texttt{blue}     & blue $<$ 0  & 0 $\leq$ blue $\leq$ 255  & blue $>$ 255 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Each parameter has 3 equivalence classes, therefore $|\texttt{red}| = |\texttt{green}| = |\texttt{blue}| = 3$.
+
+\subsubsection{Test Cases}
+\textbf{Weak Equivalence:} The number of test cases equals the maximum number of classes across all parameters: $\max(|\texttt{red}|, |\texttt{green}|, |\texttt{blue}|) = 3$ tests.\\
+\textbf{Strong Equivalence:} The cartesian product of partition subsets, therefore $|\texttt{red}| * |\texttt{green}| * |\texttt{blue}| = 27$ tests.
+
+\begin{table}[H]
+\centering
+\caption{Weak Equivalence Test Cases}
+\label{tab:color_weak_equivalence}
+\begin{tabular}{cccccc}
+\toprule
+\textbf{Test ID} & \textbf{Red} & \textbf{Green} & \textbf{Blue} & \textbf{Classes Covered} & \textbf{Expected Outcome} \\
+\midrule
+WE1 & -1  & -1  & -1  & Invalid Lower (R, G, B) & \texttt{IllegalArgumentException} \\
+WE2 & 128 & 128 & 128 & Valid (R, G, B)         & \texttt{Color} object created \\
+WE3 & 256 & 256 & 256 & Invalid Upper (R, G, B) & \texttt{IllegalArgumentException} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Strong Equivalence Test Cases}
+\label{tab:color_strong_equivalence}
+\begin{tabular}{ccccc}
+\toprule
+\textbf{Test ID} & \textbf{Red} & \textbf{Green} & \textbf{Blue} & \textbf{Expected Outcome} \\
+\midrule
+SE1  & -1  & -1  & -1  & \texttt{IllegalArgumentException} \\
+SE2  & -1  & -1  & 128 & \texttt{IllegalArgumentException} \\
+SE3  & -1  & -1  & 256 & \texttt{IllegalArgumentException} \\
+SE4  & -1  & 128 & -1  & \texttt{IllegalArgumentException} \\
+SE5  & -1  & 128 & 128 & \texttt{IllegalArgumentException} \\
+SE6  & -1  & 128 & 256 & \texttt{IllegalArgumentException} \\
+SE7  & -1  & 256 & -1  & \texttt{IllegalArgumentException} \\
+SE8  & -1  & 256 & 128 & \texttt{IllegalArgumentException} \\
+SE9  & -1  & 256 & 256 & \texttt{IllegalArgumentException} \\
+SE10 & 128 & -1  & -1  & \texttt{IllegalArgumentException} \\
+SE11 & 128 & -1  & 128 & \texttt{IllegalArgumentException} \\
+SE12 & 128 & -1  & 256 & \texttt{IllegalArgumentException} \\
+SE13 & 128 & 128 & -1  & \texttt{IllegalArgumentException} \\
+SE14 & 128 & 128 & 128 & \texttt{Color} object created \\
+SE15 & 128 & 128 & 256 & \texttt{IllegalArgumentException} \\
+SE16 & 128 & 256 & -1  & \texttt{IllegalArgumentException} \\
+SE17 & 128 & 256 & 128 & \texttt{IllegalArgumentException} \\
+SE18 & 128 & 256 & 256 & \texttt{IllegalArgumentException} \\
+SE19 & 256 & -1  & -1  & \texttt{IllegalArgumentException} \\
+SE20 & 256 & -1  & 128 & \texttt{IllegalArgumentException} \\
+SE21 & 256 & -1  & 256 & \texttt{IllegalArgumentException} \\
+SE22 & 256 & 128 & -1  & \texttt{IllegalArgumentException} \\
+SE23 & 256 & 128 & 128 & \texttt{IllegalArgumentException} \\
+SE24 & 256 & 128 & 256 & \texttt{IllegalArgumentException} \\
+SE25 & 256 & 256 & -1  & \texttt{IllegalArgumentException} \\
+SE26 & 256 & 256 & 128 & \texttt{IllegalArgumentException} \\
+SE27 & 256 & 256 & 256 & \texttt{IllegalArgumentException} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Boundary Value Analysis (BVA)}
+Boundary Value Analysis focuses on testing values at and around the boundaries of each input domain, where defects are statistically more likely to occur. The boundary values considered are:
+\begin{itemize}
+    \item \textbf{Normal variants:} $\{0, 1, 128, 254, 255\}$ representing \textit{min}, \textit{min+}, \textit{nom}, \textit{max-}, and \textit{max}.
+    \item \textbf{Robust variants:} additionally include $\{-1, 256\}$ representing \textit{min-} and \textit{max+} (out-of-range values).
+\end{itemize}
+
+\subsubsection{Number of Test Cases}
+\begin{table}[H]
+\centering
+\caption{Number of Test Cases for BVA Variants ($n = 3$)}
+\label{tab:bva_summary}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Variant} & \textbf{Formula} & \textbf{Total} \\
+\midrule
+Simple BVA              & $4n + 1$ & 13  \\
+Robust BVA              & $6n + 1$ & 19  \\
+Worst Case BVA          & $5^n$    & 125 \\
+Robust Worst Case BVA   & $7^n$    & 343 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Rationale}
+\begin{itemize}
+    \item \textbf{Simple BVA} ($4n+1 = 13$): assumes the single-fault hypothesis. For each variable, the 5 boundary values are tested while keeping the remaining variables at their nominal value. The nominal-only case is counted once instead of $n$ times.
+    \item \textbf{Robust BVA} ($6n+1 = 19$): extends Simple BVA by adding the two out-of-range values per variable, allowing explicit verification of the exception-throwing behavior.
+    \item \textbf{Worst Case BVA} ($5^n = 125$): drops the single-fault hypothesis and considers all combinations of boundary values across the three parameters (Cartesian product).
+    \item \textbf{Robust Worst Case BVA} ($7^n = 343$): the most exhaustive variant, combining the multi-fault assumption with the robust value set.
+\end{itemize}
+
+\subsubsection{Simple BVA Test Battery}
+\begin{table}[H]
+\centering
+\caption{Simple BVA Test Cases for \texttt{Color.fromRGB}}
+\label{tab:color_simple_bva}
+\begin{tabular}{ccccc}
+\toprule
+\textbf{Test ID} & \textbf{Red} & \textbf{Green} & \textbf{Blue} & \textbf{Expected Outcome} \\
+\midrule
+SBVA1  & 0   & 128 & 128 & \texttt{Color} object created \\
+SBVA2  & 1   & 128 & 128 & \texttt{Color} object created \\
+SBVA3  & 254 & 128 & 128 & \texttt{Color} object created \\
+SBVA4  & 255 & 128 & 128 & \texttt{Color} object created \\
+SBVA5  & 128 & 0   & 128 & \texttt{Color} object created \\
+SBVA6  & 128 & 1   & 128 & \texttt{Color} object created \\
+SBVA7  & 128 & 254 & 128 & \texttt{Color} object created \\
+SBVA8  & 128 & 255 & 128 & \texttt{Color} object created \\
+SBVA9  & 128 & 128 & 0   & \texttt{Color} object created \\
+SBVA10 & 128 & 128 & 1   & \texttt{Color} object created \\
+SBVA11 & 128 & 128 & 254 & \texttt{Color} object created \\
+SBVA12 & 128 & 128 & 255 & \texttt{Color} object created \\
+SBVA13 & 128 & 128 & 128 & \texttt{Color} object created \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Robust BVA Test Battery}
+\begin{table}[H]
+\centering
+\caption{Robust BVA Test Cases for \texttt{Color.fromRGB}}
+\label{tab:color_robust_bva}
+\begin{tabular}{ccccc}
+\toprule
+\textbf{Test ID} & \textbf{Red} & \textbf{Green} & \textbf{Blue} & \textbf{Expected Outcome} \\
+\midrule
+RBVA1  & -1  & 128 & 128 & \texttt{IllegalArgumentException} \\
+RBVA2  & 0   & 128 & 128 & \texttt{Color} object created \\
+RBVA3  & 1   & 128 & 128 & \texttt{Color} object created \\
+RBVA4  & 254 & 128 & 128 & \texttt{Color} object created \\
+RBVA5  & 255 & 128 & 128 & \texttt{Color} object created \\
+RBVA6  & 256 & 128 & 128 & \texttt{IllegalArgumentException} \\
+RBVA7  & 128 & -1  & 128 & \texttt{IllegalArgumentException} \\
+RBVA8  & 128 & 0   & 128 & \texttt{Color} object created \\
+RBVA9  & 128 & 1   & 128 & \texttt{Color} object created \\
+RBVA10 & 128 & 254 & 128 & \texttt{Color} object created \\
+RBVA11 & 128 & 255 & 128 & \texttt{Color} object created \\
+RBVA12 & 128 & 256 & 128 & \texttt{IllegalArgumentException} \\
+RBVA13 & 128 & 128 & -1  & \texttt{IllegalArgumentException} \\
+RBVA14 & 128 & 128 & 0   & \texttt{Color} object created \\
+RBVA15 & 128 & 128 & 1   & \texttt{Color} object created \\
+RBVA16 & 128 & 128 & 254 & \texttt{Color} object created \\
+RBVA17 & 128 & 128 & 255 & \texttt{Color} object created \\
+RBVA18 & 128 & 128 & 256 & \texttt{IllegalArgumentException} \\
+RBVA19 & 128 & 128 & 128 & \texttt{Color} object created \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Worst Case BVA Test Battery}
+The Worst Case BVA test battery consists of all $5^3 = 125$ combinations obtained from the Cartesian product of the boundary value set $\{0, 1, 128, 254, 255\}$ for the three parameters. Since all values lie within the valid domain $[0, 255]$, \emph{all 125 test cases are expected to successfully create a \texttt{Color} object}. This evidences a known limitation of this technique: without including invalid values, Worst Case BVA does not exercise the exception-throwing behavior of the function.
+
+\begin{table}[H]
+\centering
+\caption{Worst Case BVA Test Cases for \texttt{Color.fromRGB} (representative subset)}
+\label{tab:color_worst_case_bva}
+\begin{tabular}{ccccc}
+\toprule
+\textbf{Test ID} & \textbf{Red} & \textbf{Green} & \textbf{Blue} & \textbf{Expected Outcome} \\
+\midrule
+WCBVA1   & 0   & 0   & 0   & \texttt{Color} object created \\
+WCBVA2   & 0   & 0   & 1   & \texttt{Color} object created \\
+WCBVA3   & 0   & 0   & 128 & \texttt{Color} object created \\
+WCBVA4   & 0   & 0   & 254 & \texttt{Color} object created \\
+WCBVA5   & 0   & 0   & 255 & \texttt{Color} object created \\
+WCBVA6   & 0   & 1   & 0   & \texttt{Color} object created \\
+\vdots   & \vdots & \vdots & \vdots & \vdots \\
+WCBVA63  & 128 & 128 & 128 & \texttt{Color} object created \\
+\vdots   & \vdots & \vdots & \vdots & \vdots \\
+WCBVA125 & 255 & 255 & 255 & \texttt{Color} object created \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Robust Worst Case BVA Test Battery}
+The Robust Worst Case BVA test battery consists of all $7^3 = 343$ combinations obtained from the Cartesian product of the robust boundary value set $\{-1, 0, 1, 128, 254, 255, 256\}$ for the three parameters. A test case produces a valid \texttt{Color} object only if all three parameters are within $[0, 255]$; otherwise, an \texttt{IllegalArgumentException} is thrown. This yields $5^3 = 125$ successful cases and $343 - 125 = 218$ exception cases.
+
+\begin{table}[H]
+\centering
+\caption{Robust Worst Case BVA Test Cases for \texttt{Color.fromRGB} (representative subset)}
+\label{tab:color_robust_worst_case_bva}
+\begin{tabular}{ccccc}
+\toprule
+\textbf{Test ID} & \textbf{Red} & \textbf{Green} & \textbf{Blue} & \textbf{Expected Outcome} \\
+\midrule
+RWCBVA1   & -1  & -1  & -1  & \texttt{IllegalArgumentException} \\
+RWCBVA2   & -1  & -1  & 0   & \texttt{IllegalArgumentException} \\
+RWCBVA3   & -1  & -1  & 1   & \texttt{IllegalArgumentException} \\
+\vdots    & \vdots & \vdots & \vdots & \vdots \\
+RWCBVA172 & 128 & 128 & 128 & \texttt{Color} object created \\
+\vdots    & \vdots & \vdots & \vdots & \vdots \\
+RWCBVA343 & 256 & 256 & 256 & \texttt{IllegalArgumentException} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Control Flow-Based Testing}
+For rationale, the function has three validation checks (\texttt{Validate.isTrue}) that throw exceptions if any condition fails. Control Flow-Based Testing ensures all statements, decisions, and paths are covered.
+
+\textbf{TODO}
+
+\section{Function: \texttt{Note}}
+\label{sec:note}
+Placeholder for future content.
+
+\section{Conclusion}
+Placeholder for future content.
+
+\end{document}
