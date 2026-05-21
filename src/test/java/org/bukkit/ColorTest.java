@@ -4,12 +4,14 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import org.junit.jupiter.api.DisplayName;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -403,8 +405,6 @@ public class ColorTest {
         assertThrows(IllegalArgumentException.class, () -> Color.fromRGB(128, 128, 256));
     }*/
 
-    // TODO: perguntar ao professor se basta assim ou é os 7 tests?
-    // Weak Equivalence
     @Test
     public void WE1_invalidLowerClass_throwsException() {
         assertThrows(IllegalArgumentException.class, () -> Color.fromRGB(-1, -1, -1));
@@ -414,10 +414,11 @@ public class ColorTest {
     public void WE2_validClass_createsColor() {
         Color color = Color.fromRGB(128, 128, 128);
 
-        assertAll("Color components", () -> assertNotNull(color, "Color object should not be null"),
-            () -> assertEquals((byte) 128, color.getRed(),   "Red component mismatch"),
-            () -> assertEquals((byte) 128, color.getGreen(), "Green component mismatch"),
-            () -> assertEquals((byte) 128, color.getBlue(),  "Blue component mismatch")
+        assertAll("Color components",
+            () -> assertNotNull(color, "Color object should not be null"),
+            () -> assertEquals(128, color.getRed(),   "Red component mismatch"),
+            () -> assertEquals(128, color.getGreen(), "Green component mismatch"),
+            () -> assertEquals(128, color.getBlue(),  "Blue component mismatch")
         );
     }
 
@@ -426,8 +427,6 @@ public class ColorTest {
         assertThrows(IllegalArgumentException.class, () -> Color.fromRGB(256, 256, 256));
     }
 
-
-    // Strong Equivelence
     @ParameterizedTest(name = "{0}: fromRGB({1}, {2}, {3}) should throw")
     @CsvSource({
             "SE1,  -1,  -1,  -1",
@@ -472,7 +471,6 @@ public class ColorTest {
     }
 
     //TODO: BVA testing (im not sure about this, i'll ask teacher thursday)
-    // ==================== Simple BVA (13 tests) ====================
     @ParameterizedTest(name = "{0}: fromRGB({1}, {2}, {3}) should succeed")
     @CsvSource({
             "SBVA1,  0,   128, 128",
@@ -494,7 +492,6 @@ public class ColorTest {
         assertNotNull(color);
     }
 
-    // ==================== Robust BVA (19 tests) ====================
     @ParameterizedTest(name = "{0}: fromRGB({1}, {2}, {3}) should succeed")
     @CsvSource({
             "RBVA2,  0,   128, 128",
@@ -581,5 +578,137 @@ public class ColorTest {
             assertThrows(IllegalArgumentException.class,
                     () -> Color.fromRGB(red, green, blue));
         }
+    }
+
+    // CONTROL FLOW TESTS
+    // statement coverage
+    @Test
+    public void SN1_fromRGB_ValidInput_ReturnsColor() {
+        Color c = Color.fromRGB(100, 150, 200);
+        assertNotNull(c, "Valid RGB values should create a Color");
+    }
+
+    @Test
+    public void SN2_fromRGB_AllZero_ReturnsColor() {
+        Color c = Color.fromRGB(0, 0, 0);
+        assertNotNull(c, "All zero values should create a Color");
+    }
+
+    @Test
+    public void SN3_fromRGB_AllMax_ReturnsColor() {
+        Color c = Color.fromRGB(255, 255, 255);
+        assertNotNull(c, "All max values (255) should create a Color");
+    }
+
+    @Test
+    public void SN4_fromRGB_RedNegative_ThrowsWithRedMessage() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> Color.fromRGB(-1, 150, 200));
+        assertTrue(ex.getMessage().contains("Red"),
+                "D1=false (red validation), D2=true, D3=true: Red should be the failing decision");
+    }
+
+    @Test
+    public void SN5_fromRGB_RedAbove255_ThrowsWithRedMessage() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> Color.fromRGB(256, 150, 200));
+        assertTrue(ex.getMessage().contains("Red"),
+                "D1=false (red validation), D2=true, D3=true: Red should be the failing decision");
+    }
+
+    @Test
+    public void SN6_fromRGB_GreenNegative_ThrowsWithGreenMessage() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> Color.fromRGB(100, -1, 200));
+        assertTrue(ex.getMessage().contains("Green"),
+                "D1=true, D2=false (green validation), D3=true: Green should be the failing decision");
+    }
+
+    @Test
+    public void SN7_fromRGB_GreenAbove255_ThrowsWithGreenMessage() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> Color.fromRGB(100, 256, 200));
+        assertTrue(ex.getMessage().contains("Green"),
+                "D1=true, D2=false (green validation), D3=true: Green should be the failing decision");
+    }
+
+    @Test
+    public void SN8_fromRGB_BlueNegative_ThrowsWithBlueMessage() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> Color.fromRGB(100, 150, -1));
+        assertTrue(ex.getMessage().contains("Blue"),
+                "D1=true, D2=true, D3=false (blue validation): Blue should be the failing decision");
+    }
+
+    @Test
+    public void SN9_fromRGB_BlueAbove255_ThrowsWithBlueMessage() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> Color.fromRGB(100, 150, 300));
+        assertTrue(ex.getMessage().contains("Blue"),
+                "D1=true, D2=true, D3=false (blue validation): Blue should be the failing decision");
+    }
+
+    // Atomic conditions to cover:
+    // red >= 0, red <= BIT_MASK
+    // green >= 0, green <= BIT_MASK
+    // blue >= 0, blue <= BIT_MASK
+    // Each must be evaluated to TRUE and FALSE at least once.
+
+    // --- Baseline: all conditions TRUE ---
+    @Test
+    public void CN1_fromRGB_AllValid_ReturnsColor() {
+        Color c = Color.fromRGB(100, 150, 200);
+        assertNotNull(c, "All conditions TRUE: valid RGB creates Color");
+    }
+
+    // --- Red conditions ---
+    @Test
+    public void CN2_fromRGB_RedNegative_RedGe0False() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> Color.fromRGB(-1, 150, 200));
+        assertTrue(ex.getMessage().contains("Red"),
+                "Condition red >= 0 evaluated to FALSE");
+    }
+
+    @Test
+    public void CN3_fromRGB_Red256_RedLe255False() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> Color.fromRGB(256, 150, 200));
+        assertTrue(ex.getMessage().contains("Red"),
+                "Condition red <= BIT_MASK evaluated to FALSE");
+    }
+
+    // --- Green conditions ---
+    @Test
+    public void CN4_fromRGB_GreenNegative_GreenGe0False() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> Color.fromRGB(100, -1, 200));
+        assertTrue(ex.getMessage().contains("Green"),
+                "Condition green >= 0 evaluated to FALSE");
+    }
+
+    @Test
+    public void CN5_fromRGB_Green256_GreenLe255False() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> Color.fromRGB(100, 256, 200));
+        assertTrue(ex.getMessage().contains("Green"),
+                "Condition green <= BIT_MASK evaluated to FALSE");
+    }
+
+    // --- Blue conditions ---
+    @Test
+    public void CN6_fromRGB_BlueNegative_BlueGe0False() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> Color.fromRGB(100, 150, -1));
+        assertTrue(ex.getMessage().contains("Blue"),
+                "Condition blue >= 0 evaluated to FALSE");
+    }
+
+    @Test
+    public void CN7_fromRGB_Blue300_BlueLe255False() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> Color.fromRGB(100, 150, 300));
+        assertTrue(ex.getMessage().contains("Blue"),
+                "Condition blue <= BIT_MASK evaluated to FALSE");
     }
 }
