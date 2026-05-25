@@ -1,0 +1,41 @@
+#inFile
+	filename: 
+		Emptystring. [error]
+		One character.
+		Multiple characters.
+	content:
+		Contains illegal midtext character. [error]
+		First character forbidden. [error]
+		Valid syntax.
+	permissions:
+		Has read perm. [if exists]
+		No read perm. [if exists]
+	fileExists:
+		Yes. [property exists]
+		No.
+
+#outFile
+	filename: 
+                Emptystring. [error]
+                One character. 
+                Multiple characters.
+	content:
+                Contains illegal midtext character. [error]
+                First character forbidden. [error]
+                Valid syntax.
+        permissions:
+                Has write perm. [if fileExists]
+                No write perm. [if fileExists]
+	parentfolder:
+		Writeable by program. [if !fileExists]
+		Not writeable. [if !fileExists]
+	containsPath:
+		Yes. [property hasPath]
+		No.
+	validPath:
+		Yes. [if hasPath]
+		No.
+        fileExists:
+                Yes. [property fileExists]
+                No.
+

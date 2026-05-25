@@ -1,0 +1,16 @@
+octave in [0, 1]
+octave < 0 or octave > 2
+octave == 2 
+tone == F
+tone != F 
+tone == B
+sharped == true
+sharped == false
+
+EFFECTS 
+sharped = false
+
+
+tone == E AND sharped -> tone =f, sharped = false (which is also a cause)
+tone == B AND sharped -> tone =C, sharped = false
+octave == 2 AND (tone != F OR sharped == false) => IllegalArgument
