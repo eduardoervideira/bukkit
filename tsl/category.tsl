@@ -1,4 +1,7 @@
 #inFile
+	fileExists:
+		Yes. [property exists]
+		No.
 	filename: 
 		Emptystring. [error]
 		One character.
@@ -10,24 +13,24 @@
 	permissions:
 		Has read perm. [if exists]
 		No read perm. [if exists]
-	fileExists:
-		Yes. [property exists]
-		No.
 
 #outFile
+    fileExists:
+        Yes. [property fileExists]
+        No.
 	filename: 
-                Emptystring. [error]
-                One character. 
-                Multiple characters.
+        Emptystring. [error]
+        One character.
+        Multiple characters.
 	content:
-                Contains illegal midtext character. [error]
-                First character forbidden. [error]
-                Valid syntax.
-        permissions:
-                Has write perm. [if fileExists]
-                No write perm. [if fileExists]
+        Contains illegal midtext character. [error]
+        First character forbidden. [error]
+        Valid syntax.
+    permissions:
+        Has write perm. [if fileExists]
+        No write perm. [if fileExists]
 	parentfolder:
-		Writeable by program. [if !fileExists]
+        Writeable by program. [if !fileExists]
 		Not writeable. [if !fileExists]
 	containsPath:
 		Yes. [property hasPath]
@@ -35,7 +38,5 @@
 	validPath:
 		Yes. [if hasPath]
 		No.
-        fileExists:
-                Yes. [property fileExists]
-                No.
+
 
